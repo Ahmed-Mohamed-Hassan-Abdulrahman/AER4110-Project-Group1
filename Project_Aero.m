@@ -7,9 +7,13 @@ close all
 
 %% Initialization (Inputs)
 
+% The Free Stream Velocity
+
+Vinf=100;
+
 % Choose the maximum mesh size:
 
-i_max=49; j_max=50;
+i_max=50; j_max=50;
 
 % Enter the Joukowski Airfoil Parameters
 
@@ -75,6 +79,7 @@ end
 hold on
 
 %% Projecting the intersection points
+airfoil_proj=zeros(1,i_max);
 for i=1:i_max
     if i<=i_max/2
         airfoil_proj(i)=y_upper(r*cos(Delta_theta*(i-1)));  % Projected coordinate
@@ -88,8 +93,8 @@ end
 %% Plotting Far field and its lines
 
 for i=1:i_max
-    x_circleR_plot(i)=R*cos(Delta_theta*(i-1));  % x coordinates of circle
-    y_circleR_plot(i)=R*sin(Delta_theta*(i-1));  % y coordinates of circle
+    x_circleR_plot(i)=R*cos(Delta_theta*(i-1));  % x coordinates of farfield circle
+    y_circleR_plot(i)=R*sin(Delta_theta*(i-1));  % y coordinates of farfield circle
 
     plot([0 x_circleR_plot(i)],[0 y_circleR_plot(i)])
 end
@@ -108,17 +113,30 @@ Delta_y=(y_circleR_plot-airfoil_proj)/(j_max-1);    % The discretized change in 
 figure(2)
 plot(x_airfoil_coord,y_upper(x_airfoil_coord),x_airfoil_coord,y_lower(x_airfoil_coord))
 hold on
+axis equal
 plot(x_circleR_plot,y_circleR_plot)
-hold on
 for i=1:i_max
     plot([x_circle_plot(i) x_circleR_plot(i)],[airfoil_proj(i) y_circleR_plot(i)])
 end
-hold on
 
-for j=1:j_max-2
+% initialiazing variables used in plotting
+x_coords=zeros(j_max,i_max);
+y_coords=zeros(j_max,i_max);
+
+% Setting the coordinated of the airfoil and the farfield into the
+% variables
+
+x_coords(1,:)=x_circle_plot;
+y_coords(1,:)=airfoil_proj;
+x_coords(j_max,:)=x_circleR_plot;
+y_coords(j_max,:)=y_circleR_plot;
+
+% plotting the lines
+
+for j=2:j_max-1
     for i=1:i_max
-        x_coords(j,i)=x_circle_plot(i)+Delta_x(i)*j;
-        y_coords(j,i)=airfoil_proj(i)+Delta_y(i)*j;
+        x_coords(j,i)=x_circle_plot(i)+Delta_x(i)*(j-1);
+        y_coords(j,i)=airfoil_proj(i)+Delta_y(i)*(j-1);
     end
     plot(x_coords(j,:),y_coords(j,:))
 end
@@ -127,6 +145,33 @@ end
 
 Delta_eta1=(eta1_max-eta1_min)/(i_max-1);
 Delta_eta2=(eta2_max-eta2_min)/(j_max-1);
+
+% initializing the eta domain
+
+eta1_coords=zeros(j_max,i_max);
+eta2_coords=zeros(j_max,i_max);
+
+% Getting the eta1 and eta2 coordinates
+
+for j=1:j_max
+    for i=1:i_max
+        eta1_coords(j,i)=Delta_eta1*(i-1);
+        eta2_coords(j,i)=Delta_eta2*(j-1);
+    end
+end
+
+%% Calculating Boundary Conditions
+
+% at j=jmax, psi=0
+% Calculting velocity components at the farfield
+
+uinf=Vinf*cos(AoA*pi/180);
+vinf=Vinf*cos(AoA*pi/180);
+
+% Calculating delta psi at the farfield
+
+Delta_psi=uinf*Delta_y-vinf*Delta_x;
+
 
 
 
