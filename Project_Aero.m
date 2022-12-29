@@ -20,7 +20,7 @@ i_max=50; j_max=50;
 c=1;            % Chord
 C_max_c=0.04;     % Maximum Camber/Chord Percentage
 t_max_c=0.05;     % Maximum Thickness/Chord Percentage
-AoA=4;          % Angle of Attack of flow Percentage
+AoA=4*pi/180;          % Angle of Attack of flow Percentage
 
 % Drawing Parameters
 
@@ -61,6 +61,9 @@ Delta_theta=2*pi/(i_max-1);
  % to plot a circle we need points in x and y, this can be
  % achieved by using x=r*cos(theta) and y=r*sin(theta)
 
+x_circle_plot=zeros(1,i_max);
+y_circle_plot=zeros(1,i_max);
+
 for i=1:i_max
     x_circle_plot(i)=r*cos(Delta_theta*(i-1));  % x coordinates of circle
     y_circle_plot(i)=r*sin(Delta_theta*(i-1));  % y coordinates of circle
@@ -77,9 +80,12 @@ for i=1:i_max
     plot([0 x_circle_plot(i)],[0 y_circle_plot(i)])
 end
 hold on
+axis equal
 
 %% Projecting the intersection points
+
 airfoil_proj=zeros(1,i_max);
+
 for i=1:i_max
     if i<=i_max/2
         airfoil_proj(i)=y_upper(r*cos(Delta_theta*(i-1)));  % Projected coordinate
@@ -91,6 +97,9 @@ for i=1:i_max
 end
 
 %% Plotting Far field and its lines
+
+x_circleR_plot=zeros(1,i_max);
+y_circleR_plot=zeros(1,i_max);
 
 for i=1:i_max
     x_circleR_plot(i)=R*cos(Delta_theta*(i-1));  % x coordinates of farfield circle
@@ -114,6 +123,7 @@ figure(2)
 plot(x_airfoil_coord,y_upper(x_airfoil_coord),x_airfoil_coord,y_lower(x_airfoil_coord))
 hold on
 axis equal
+
 plot(x_circleR_plot,y_circleR_plot)
 for i=1:i_max
     plot([x_circle_plot(i) x_circleR_plot(i)],[airfoil_proj(i) y_circleR_plot(i)])
@@ -123,7 +133,7 @@ end
 x_coords=zeros(j_max,i_max);
 y_coords=zeros(j_max,i_max);
 
-% Setting the coordinated of the airfoil and the farfield into the
+% Setting the coordinates of the airfoil and the farfield into the
 % variables
 
 x_coords(1,:)=x_circle_plot;
@@ -160,13 +170,45 @@ for j=1:j_max
     end
 end
 
+% Calculating computational domain derivatives
+
+% Initialization
+x_eta1=zeros(j_max,i_max); y_eta1=zeros(j_max,i_max);
+x_eta2=zeros(j_max,i_max); y_eta2=zeros(j_max,i_max);
+
+x_eta1(:,1)=(-1*x_coords(:,i_max-1)+x_coords(:,2))./(2*Delta_eta1);
+x_eta2(1,:)=(-3*x_coords(1,:)+4*x_coords(2,:)-x_coords(3,:))./(2*Delta_eta2);
+y_eta1(:,1)=(-1*y_coords(:,i_max-1)+y_coords(:,2))./(2*Delta_eta1);
+y_eta2(1,:)=(-3*y_coords(1,:)+4*y_coords(2,:)-y_coords(3,:))./(2*Delta_eta2);
+
+x_eta1(:,i_max)=(-1*x_coords(:,i_max-1)+x_coords(:,2))./(2*Delta_eta1);
+x_eta2(j_max,:)=(3*x_coords(j_max,:)-4*x_coords(j_max-1,:)+x_coords(j_max-2,:))./(2*Delta_eta2);
+y_eta1(:,i_max)=(-1*y_coords(:,i_max-1)+y_coords(:,2))./(2*Delta_eta1);
+y_eta2(j_max,:)=(3*y_coords(j_max,:)-4*y_coords(j_max-1,:)+y_coords(j_max-2,:))./(2*Delta_eta2);
+
+for i=2:i_max-1
+    x_eta1(:,i)=(-1*x_coords(:,i-1)+x_coords(:,i+1))/(2*Delta_eta1);
+    y_eta1(:,i)=(-1*y_coords(:,i-1)+y_coords(:,i+1))/(2*Delta_eta1);
+end
+
+for j=2:j_max-1
+    x_eta2(j,:)=(-1*x_coords(j-1,:)+x_coords(j+1,:))/(2*Delta_eta2);
+    y_eta2(j,:)=(-1*y_coords(j-1,:)+y_coords(j+1,:))/(2*Delta_eta2);
+end
+
+J=x_eta1.*y_eta2-x_eta2.*y_eta1;
+c11=(x_eta2.^2+y_eta2.^2)./J;
+c12=-1*(x_eta1.*x_eta2+y_eta1.*y_eta2)./J;
+c22=(x_eta1.^2+y_eta1.^1)./J;
+
+
 %% Calculating Boundary Conditions
 
 % at j=jmax, psi=0
 % Calculting velocity components at the farfield
 
-uinf=Vinf*cos(AoA*pi/180);
-vinf=Vinf*cos(AoA*pi/180);
+uinf=Vinf*cos(AoA);
+vinf=Vinf*cos(AoA);
 
 % Calculating delta psi at the farfield
 
