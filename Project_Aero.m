@@ -18,9 +18,9 @@ i_max=50; j_max=50;
 % Enter the Joukowski Airfoil Parameters
 
 c=1;            % Chord
-C_max_c=0.04;     % Maximum Camber/Chord Percentage
-t_max_c=0.05;     % Maximum Thickness/Chord Percentage
-AoA=4*pi/180;          % Angle of Attack of flow Percentage
+C_max_c=0.05;     % Maximum Camber/Chord Percentage
+t_max_c=0.1;     % Maximum Thickness/Chord Percentage
+AoA=8*pi/180;          % Angle of Attack of flow Percentage
 
 % Drawing Parameters
 
@@ -202,23 +202,39 @@ c12=-1*(x_eta1.*x_eta2+y_eta1.*y_eta2)./J;
 c22=(x_eta1.^2+y_eta1.^1)./J;
 
 
-%% Calculating Boundary Conditions
+%% Calculating psi at the zero condition
 
-% at j=jmax, psi=0
-% Calculting velocity components at the farfield
+% Calculating velocity components
 
 uinf=Vinf*cos(AoA);
-vinf=Vinf*cos(AoA);
+vinf=Vinf*sin(AoA);
 
-% Calculating delta psi at the farfield
+% Initialization
 
-Delta_psi=uinf*Delta_y-vinf*Delta_x;
+psi=zeros(j_max,i_max);
+Delta_x_farfield=zeros(1,i_max-1);
+Delta_y_farfield=zeros(1,i_max-1);
+Delta_psi=zeros(1,i_max-1);
 
+% Calculation of the zero iteration and boundary condition iteration
 
+% assuming that psi is zero on the airfoil
+for i=2:i_max
+    Delta_x_farfield(i-1)=x_circleR_plot(i)-x_circleR_plot(i-1);
+    Delta_y_farfield(i-1)=y_circleR_plot(i)-y_circleR_plot(i-1);
+    Delta_psi(i-1)=uinf*Delta_y_farfield(i-1)-vinf*Delta_x_farfield(i-1);
+    psi(j_max,i)=psi(j_max,i-1)+Delta_psi(i-1);
+    psi(:,i)=linspace(psi(1,i),psi(j_max,i),j_max);
+end
 
-
-
-
+psi(:,1)=psi(:,i_max);
+if C_max_c==0
+    psi(1,:)=psi(2,1);
+elseif C_max_c>0
+    psi(1,:)=psi(2,i_max-ceil(i_max*C_max_c/2));
+elseif C_max_c<0
+    psi(1,:)=psi(2,1+floor(i_max*C_max_c/2));
+end
 
 
 
