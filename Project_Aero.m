@@ -13,7 +13,7 @@ Vinf=100;
 
 % Choose the maximum mesh size:
 
-i_max=10; j_max=10;
+i_max=50; j_max=50;
 
 % Enter the Joukowski Airfoil Parameters
 
@@ -81,8 +81,11 @@ for i=1:i_max
 end
 hold on
 axis equal
+
 %% Projecting the intersection points
+
 airfoil_proj=zeros(1,i_max);
+
 for i=1:i_max
     if i<=i_max/2
         airfoil_proj(i)=y_upper(r*cos(Delta_theta*(i-1)));  % Projected coordinate
@@ -120,6 +123,7 @@ figure(2)
 plot(x_airfoil_coord,y_upper(x_airfoil_coord),x_airfoil_coord,y_lower(x_airfoil_coord))
 hold on
 axis equal
+
 plot(x_circleR_plot,y_circleR_plot)
 for i=1:i_max
     plot([x_circle_plot(i) x_circleR_plot(i)],[airfoil_proj(i) y_circleR_plot(i)])
@@ -168,6 +172,7 @@ end
 
 % Calculating computational domain derivatives
 
+% Initialization
 x_eta1=zeros(j_max,i_max); y_eta1=zeros(j_max,i_max);
 x_eta2=zeros(j_max,i_max); y_eta2=zeros(j_max,i_max);
 
@@ -194,7 +199,7 @@ end
 J=x_eta1.*y_eta2-x_eta2.*y_eta1;
 c11=(x_eta2.^2+y_eta2.^2)./J;
 c12=-1*(x_eta1.*x_eta2+y_eta1.*y_eta2)./J;
-c22=(x_eta1.^2+y_eta2.^1)./J;
+c22=(x_eta1.^2+y_eta1.^1)./J;
 
 
 %% Calculating Boundary Conditions
@@ -209,7 +214,7 @@ vinf=Vinf*cos(AoA);
 
 Delta_psi=uinf*Delta_y-vinf*Delta_x;
 
-
+%% hihi
 
 
 
