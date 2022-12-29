@@ -2,7 +2,7 @@
 % Project made by Ahmed Mohamed Hassan Abdulrahman
 
 clc
-clearvars
+clear vars
 close all
 
 %% Initialization (Inputs)
