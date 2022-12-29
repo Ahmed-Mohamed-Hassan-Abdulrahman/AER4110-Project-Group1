@@ -214,7 +214,7 @@ vinf=Vinf*cos(AoA);
 
 Delta_psi=uinf*Delta_y-vinf*Delta_x;
 
-%% hihi
+
 
 
 
