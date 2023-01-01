@@ -1,4 +1,4 @@
-clear all 
+clear vars  
 close all 
 clc
 
@@ -11,9 +11,9 @@ Vinf=100;
 % Enter the Joukowski Airfoil Parameters
 
 c=1;              % Chord
-C_max_c=0.04;     % Maximum Camber/Chord Percentage
-t_max_c=0.05;     % Maximum Thickness/Chord Percentage
-AoA=4*pi/180;     % Angle of Attack of flow Percentage
+C_max_c=0.05;     % Maximum Camber/Chord Percentage
+t_max_c=0.1;     % Maximum Thickness/Chord Percentage
+AoA=8*pi/180;     % Angle of Attack of flow Percentage
 
 % Grid parameters 
 
