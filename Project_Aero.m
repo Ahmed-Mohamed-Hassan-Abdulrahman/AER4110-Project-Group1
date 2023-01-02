@@ -367,27 +367,47 @@ Cp=1-(V/Vinf).^2;
 
 %% Drawings
 
-figure(3)
-plot(x_circle_plot,Cp(1,:))
+% using the function provided to solve using potential flow
+[V_analytical, Cp_analytical, x_coords_analytical]=Joukowski(Vinf,AoA,c,C_max_c,t_max_c,i_max/2);
 
-[V_analytical, Cp_analytical]=Joukowski(Vinf,AoA,c,C_max_c,t_max_c,i_max/2);
+figure
+hold on
+plot(x_circle_plot,Cp(1,:)) % for plotting Cp
+plot(x_circle_plot,V(1,:))  % For plotting V
 
-figure()
+% plotting 
+figure
+hold on
+plot(x_circle_plot,Cp(1,:),x_coords_analytical,Cp_analytical)
+
+figure('Name','Velocity distribution')
+hold on
+plot(x_circle_plot,V(1,:),x_coords_analytical,V_analytical)
+
+figure
 hold on
 plot(x_circle_plot,airfoil_proj)
 contour(x_coords,y_coords,psi,linspace(min(min(psi)),max(max(psi)),i_max));
 
-figure()
+figure
 hold on
 plot(x_circle_plot,airfoil_proj)
-contour(x_coords,y_coords,V,linspace(min(min(V)),max(max(V)),i_max));
-
-figure
 contourf(x_coords,y_coords,V)
 xlabel('x','FontSize',16)
 ylabel('y','FontSize',16)
 c = colorbar;
-c.Label.String = 'Pressure';
+c.Label.String = 'Velocity';
+c.Label.FontSize = 16;
+
+% Cp contour
+figure
+hold on
+plot(x_circle_plot,airfoil_proj)
+contourf(x_coords,y_coords,Cp)
+xlabel('x','FontSize',16)
+ylabel('y','FontSize',16)
+c = colorbar;
+c.Label.String = 'Coefficient of Pressure';
 c.Label.FontSize = 16;
 
 

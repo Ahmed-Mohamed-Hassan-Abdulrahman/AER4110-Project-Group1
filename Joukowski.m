@@ -13,7 +13,7 @@
 % Published by: Mohamed Tarek Mohamed Amien 
 % publishing year: 1st January /2023
 
-function [V1, C_p] = Joukowski(Vinf, AoA, c, C_max_c, t_max_c,  i_max ) 
+function [V1, C_p, x1] = Joukowski(Vinf, AoA, c, C_max_c, t_max_c,  i_max ) 
 %% Initialization (Inputs)
 
 % The Free Stream Velocity
