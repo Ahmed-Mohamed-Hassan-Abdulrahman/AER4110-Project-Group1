@@ -2,7 +2,7 @@
 % Project made by Ahmed Mohamed Hassan Abdulrahman
 
 clc
-clear vars
+clearvars
 close all
 
 %% Initialization (Inputs)
@@ -365,50 +365,116 @@ V(j_ind:j_ind,i_ind-1:i_ind+1)=linspace(V(j_ind,i_ind-1),V(j_ind,i_ind+1),length
 
 Cp=1-(V/Vinf).^2;
 
-%% Drawings
+%% Analytical solution using Joukowski Airfoil
 
-% using the function provided to solve using potential flow
 [V_analytical, Cp_analytical, x_coords_analytical]=Joukowski(Vinf,AoA,c,C_max_c,t_max_c,i_max/2);
 
-figure
-hold on
-plot(x_circle_plot,Cp(1,:)) % for plotting Cp
-plot(x_circle_plot,V(1,:))  % For plotting V
 
-% plotting 
-figure
-hold on
-plot(x_circle_plot,Cp(1,:),x_coords_analytical,Cp_analytical)
+%% Graphs and plots
 
-figure('Name','Velocity distribution')
-hold on
-plot(x_circle_plot,V(1,:),x_coords_analytical,V_analytical)
+% Numerical pressure and velocity distribution 
 
-figure
-hold on
-plot(x_circle_plot,airfoil_proj)
-contour(x_coords,y_coords,psi,linspace(min(min(psi)),max(max(psi)),i_max));
-
-figure
-hold on
-plot(x_circle_plot,airfoil_proj)
-contourf(x_coords,y_coords,V)
-xlabel('x','FontSize',16)
-ylabel('y','FontSize',16)
-c = colorbar;
-c.Label.String = 'Velocity';
-c.Label.FontSize = 16;
-
-% Cp contour
-figure
-hold on
-plot(x_circle_plot,airfoil_proj)
-contourf(x_coords,y_coords,Cp)
-xlabel('x','FontSize',16)
-ylabel('y','FontSize',16)
-c = colorbar;
-c.Label.String = 'Coefficient of Pressure';
-c.Label.FontSize = 16;
+figure('Name', 'Analytical Pressure and Velocity Distribution')
+     tiledlayout(2,1);
+        nexttile 
+        hold on
+            plot(x_circle_plot,V(1,:),'-' ,'LineWidth',1.5,'color','red')      
+            plot(x_circle_plot,800*airfoil_proj,'LineWidth',0.5,'color','black')
+            fill(x_circle_plot,800*airfoil_proj,'cyan')             
+            grid on
+            xlabel('$x$', 'interpreter', 'latex')
+            ylabel('$V$', 'interpreter', 'latex')
+            title('Velocity distribution', 'FontName','lm roman 9')
+        nexttile 
+        hold on
+            plot(x_circle_plot,Cp(1,:),'-' ,'LineWidth',1.5,'color','blue')
+            plot(x_circle_plot,15*airfoil_proj+min(Cp(1,:)),'LineWidth',0.5,'color','black')
+            fill(x_circle_plot,15*airfoil_proj+min(Cp(1,:)),'cyan') 
+            grid on
+            xlabel('$x$', 'interpreter', 'latex')
+            ylabel('$C_p$', 'interpreter', 'latex')
+            title('pressure coefficient distribution', 'FontName','lm roman 9')
 
 
-axis equal
+% Comparison Between the Joukowski Analytical and Numerical Solution
+
+figure('Name', 'Comparison Between the Joukowski Analytical and Numerical Solution')
+    tiledlayout(2,1);
+        nexttile 
+            hold on
+            % velocity results
+            plot(x_circle_plot,V(1,:),'-' ,'LineWidth',1.5,'color','red')
+            plot(x_coords_analytical,V_analytical,'-' ,'LineWidth',1.5,'color','blue')
+            % the Airfoil 
+            plot(x_circle_plot,800*airfoil_proj,'LineWidth',0.5,'color','black')
+            fill(x_circle_plot,800*airfoil_proj,'cyan') 
+            % figure settings
+            grid on
+            xlabel('$x_1$', 'interpreter', 'latex')
+            ylabel('$V_1$', 'interpreter', 'latex')
+            legend('Numerical','Analytical','Airforil')
+            title('Velocity distribution', 'FontName','lm roman 9')
+        nexttile 
+            hold on
+            % velocity results
+            plot(x_circle_plot,Cp(1,:),'-' ,'LineWidth',1.5,'color','red')
+            plot(x_coords_analytical,Cp_analytical,'-' ,'LineWidth',1.5,'color','blue')
+            % the Airfoil 
+            plot(x_circle_plot,20*airfoil_proj+min(Cp_analytical),'LineWidth',0.5,'color','black')
+            fill(x_circle_plot,20*airfoil_proj+min(Cp_analytical),'cyan') 
+            % figure settings
+            grid on
+            xlabel('$x_1$', 'interpreter', 'latex')
+            ylabel('$C_p$', 'interpreter', 'latex')
+            legend('Numerical','Analytical','Airforil')
+            title('Pressure coefficient distribution', 'FontName','lm roman 9')
+
+% Stream Lines Over the Airfoil
+%Zoomed out
+figure('Name', 'Streamlines Over the Airfoil')
+        hold on
+            plot(x_circle_plot,airfoil_proj)
+            fill(x_circle_plot,airfoil_proj,'cyan')
+            contour(x_coords,y_coords,psi,linspace(min(min(psi)),max(max(psi)),i_max));
+            axis equal
+            axis off
+            title('Stream Lines Over the Airfoil', 'FontName','lm roman 12')
+%Zoomed in
+figure('Name', 'Streamlines Over the Airfoil')
+        hold on
+            plot(x_circle_plot,airfoil_proj)
+            fill(x_circle_plot,airfoil_proj,'cyan')
+            contour(x_coords,y_coords,psi,linspace(min(min(psi)),max(max(psi)),i_max));
+            axis([-1.5 1.5 -1.5 1.5 ])
+            axis off
+            title('Stream Lines Over the Airfoil', 'FontName','lm roman 12')
+
+
+
+% Velocity and pressure Distribution Contour Over the Airfoil
+% zoomed in
+figure('Name', 'Velocity and Pressure Coefficient contours')
+    tiledlayout(1,2)
+        nexttile
+        hold on
+            plot(x_circle_plot,airfoil_proj,'LineWidth',1.5)
+            contourf(x_coords,y_coords,V,100,'edgecolor','none')
+            axis([-1.5 1.5 -1.5 1.5 ])
+            axis off
+            xlabel('x','FontSize',16)
+            ylabel('y','FontSize',16)
+            c = colorbar;
+            c.Label.String = 'Velocity';
+            c.Label.FontSize = 16;
+        nexttile
+        hold on
+            plot(x_circle_plot,airfoil_proj,'LineWidth',1.5)
+            contourf(x_coords,y_coords,Cp,100,'edgecolor','none')
+            axis([-1.5 1.5 -1.5 1.5 ])
+            axis off
+            xlabel('x','FontSize',16)
+            ylabel('y','FontSize',16)
+            c = colorbar;
+            c.Label.String = 'Coefficient of Pressure';
+            c.Label.FontSize = 16;
+
