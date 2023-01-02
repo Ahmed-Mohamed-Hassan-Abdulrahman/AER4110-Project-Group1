@@ -372,9 +372,23 @@ plot(x_circle_plot,Cp(1,:))
 
 [V_analytical, Cp_analytical]=Joukowski(Vinf,AoA,c,C_max_c,t_max_c,i_max/2);
 
-figure(4)
+figure()
 hold on
 plot(x_circle_plot,airfoil_proj)
-contour([x_coords],[y_coords],[psi],linspace(min(min(psi)),max(max(psi)),70));
+contour(x_coords,y_coords,psi,linspace(min(min(psi)),max(max(psi)),i_max));
+
+figure()
+hold on
+plot(x_circle_plot,airfoil_proj)
+contour(x_coords,y_coords,V,linspace(min(min(V)),max(max(V)),i_max));
+
+figure
+contourf(x_coords,y_coords,V)
+xlabel('x','FontSize',16)
+ylabel('y','FontSize',16)
+c = colorbar;
+c.Label.String = 'Pressure';
+c.Label.FontSize = 16;
+
 
 axis equal
