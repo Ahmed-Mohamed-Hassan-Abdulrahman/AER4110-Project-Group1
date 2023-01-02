@@ -1,9 +1,3 @@
-<<<<<<< HEAD:Joukowski_Analytical.m
-clear vars  
-close all 
-clc
-
-=======
 %% Flow Over Joukowski Airfoil. 
 % This Fucion Calculates the Velocity and pressure Distribution over an
 % Airforil by using the analysical joukowski transformaiotn.
@@ -20,27 +14,18 @@ clc
 % publishing year: 1st January /2023
 
 function [V1, C_p] = Joukowski(Vinf, AoA, c, C_max_c, t_max_c,  i_max ) 
->>>>>>> MainAero:Joukowski.m
 %% Initialization (Inputs)
 
 % The Free Stream Velocity
 
-%Vinf=100;
+% Vinf=100;
 
 % Enter the Joukowski Airfoil Parameters
 
-<<<<<<< HEAD:Joukowski_Analytical.m
-c=1;              % Chord
-C_max_c=0.05;     % Maximum Camber/Chord Percentage
-t_max_c=0.1;     % Maximum Thickness/Chord Percentage
-AoA=8*pi/180;     % Angle of Attack of flow Percentage
-
-=======
 % c=1;              % Chord
 % C_max_c=0.04;     % Maximum Camber/Chord Percentage
 % t_max_c=0.05;     % Maximum Thickness/Chord Percentage
    
->>>>>>> MainAero:Joukowski.m
 % Grid parameters 
 
 %  i_max = 10;       % eta_1 grid size 
