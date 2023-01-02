@@ -13,14 +13,14 @@ Vinf=100;
 
 % Choose the maximum mesh size:
 
-i_max=50; j_max=50;
+i_max=100; j_max=100;
 
 % Enter the Joukowski Airfoil Parameters
 
 c=1;                    % Chord
 C_max_c=0.04;           % Maximum Camber/Chord Percentage
-t_max_c=0.1;            % Maximum Thickness/Chord Percentage
-AoA=8*pi/180;           % Angle of Attack of flow Percentage
+t_max_c=0.05;            % Maximum Thickness/Chord Percentage
+AoA=4*pi/180;           % Angle of Attack of flow Percentage
 
 % Drawing Parameters
 
@@ -359,8 +359,10 @@ v=-psi_eta1.*eta1_x-psi_eta2.*eta2_x;
 %% Cp Calculation
 
 V=sqrt(u.^2+v.^2);
-[j_ind,i_ind]=find(V>=10*mean(mean(V)));
+[j_ind,i_ind]=find(V>=3*mean(mean(V)));
 V(j_ind,i_ind)=(V(j_ind,i_ind-1)+V(j_ind,i_ind+1))/2;
+V(j_ind:j_ind,i_ind-1:i_ind+1)=linspace(V(j_ind,i_ind-1),V(j_ind,i_ind+1),length(i_ind));
+
 Cp=1-(V/Vinf).^2;
 
 %% Drawings
@@ -368,4 +370,4 @@ Cp=1-(V/Vinf).^2;
 figure(3)
 plot(x_circle_plot,Cp(1,:))
 
-[V_analytical, Cp_analytical]=Joukowski(Vinf, AoA, c, C_max_c, t_max_c,  1000 );
+[V_analytical, Cp_analytical]=Joukowski(Vinf,AoA,c,C_max_c,t_max_c,i_max/2);
