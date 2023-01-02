@@ -371,3 +371,10 @@ figure(3)
 plot(x_circle_plot,Cp(1,:))
 
 [V_analytical, Cp_analytical]=Joukowski(Vinf,AoA,c,C_max_c,t_max_c,i_max/2);
+
+figure(4)
+hold on
+plot(x_circle_plot,airfoil_proj)
+contour([x_coords],[y_coords],[psi],linspace(min(min(psi)),max(max(psi)),70));
+
+axis equal
