@@ -99,28 +99,28 @@ C_p = 1-(V1/Vinf).^2;
 
 % plot the Z Circle and the Circle shift
 
-figure('Name', 'Joukowski Circles' )
-        plot(x_dash, y_dash)
-        grid on 
-        axis([-0.5 0.5 -0.5 0.5])
-        axis('equal')
-        xlabel('$x$', 'interpreter', 'latex')
-        ylabel('$y$', 'interpreter', 'latex')
-hold on
-        plot(x, y)
-        grid on 
-        axis([-0.5 0.5 -0.5 0.5])
-        axis('equal')
-        xlabel('$x''$', 'interpreter', 'latex')
-        ylabel('$y''$', 'interpreter', 'latex')
+% figure('Name', 'Joukowski Circles' )
+%         plot(x_dash, y_dash)
+%         grid on 
+%         axis([-0.5 0.5 -0.5 0.5])
+%         axis('equal')
+%         xlabel('$x$', 'interpreter', 'latex')
+%         ylabel('$y$', 'interpreter', 'latex')
+% hold on
+%         plot(x, y)
+%         grid on 
+%         axis([-0.5 0.5 -0.5 0.5])
+%         axis('equal')
+%         xlabel('$x''$', 'interpreter', 'latex')
+%         ylabel('$y''$', 'interpreter', 'latex')
 
 
-figure('Name', 'Joukowski Airfoil comparision' )
+figure('Name', 'Joukowski Airfoil check' )
 
       plot(x1, y1)
       grid on
 hold on
-      plot(X, Y, '*')
+      plot(X, Y, '.')
       grid on
       axis('equal')
 
@@ -128,16 +128,25 @@ hold on
 figure('Name', 'Velocity and Cp distribution over the Airfoil' )
 tiledlayout(2,1);
 nexttile 
-      plot(x1, V1, '-')
+      hold on 
+      plot(x1, V1, '-' ,'LineWidth',1.5,'color','red')
+      plot(x1, 700*y1,'LineWidth',0.5,'color','black')
+      fill(x1, 700*y1,'cyan')
+      grid on
       grid on
       xlabel('$x_1$', 'interpreter', 'latex')
       ylabel('$V_1$', 'interpreter', 'latex')
+      legend('Velocity distribution','Airforil')
       title('Velocity distribution', 'FontName','lm roman 9')
 nexttile
-      plot(x1, C_p, '-')
+      hold on
+      fill(x1, 20*y1,'cyan')
+      plot(x1, 20*y1,'LineWidth',0.5,'color','black')
+      plot(x1, C_p, '-','LineWidth',1.5,'color','blue')
       grid on
       xlabel('$x_1$', 'interpreter', 'latex')
       ylabel('$C_p$', 'interpreter', 'latex')
+      legend('Cp distribution','Airforil')
       title('Pressure Coefficient distribution', 'FontName','lm roman 9')
 
 
