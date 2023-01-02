@@ -18,7 +18,7 @@ i_max=50; j_max=50;
 % Enter the Joukowski Airfoil Parameters
 
 c=1;            % Chord
-C_max_c=0.05;     % Maximum Camber/Chord Percentage
+C_max_c=0.04;     % Maximum Camber/Chord Percentage
 t_max_c=0.1;     % Maximum Thickness/Chord Percentage
 AoA=8*pi/180;          % Angle of Attack of flow Percentage
 
@@ -31,6 +31,10 @@ R=5*c;                  % Far field radius assumption
 
 eta1_max=1;     eta1_min=0;
 eta2_max=1;     eta2_min=0;
+
+% Solution Limits
+
+RMS_limit=1e-5;
 
 %% Generating Airfoil Coordinates
 
@@ -199,7 +203,7 @@ end
 J=x_eta1.*y_eta2-x_eta2.*y_eta1;
 c11=(x_eta2.^2+y_eta2.^2)./J;
 c12=-1*(x_eta1.*x_eta2+y_eta1.*y_eta2)./J;
-c22=(x_eta1.^2+y_eta1.^1)./J;
+c22=(x_eta1.^2+y_eta1.^2)./J;
 
 
 %% Calculating psi at the zero condition
@@ -236,8 +240,128 @@ elseif C_max_c<0
     psi(1,:)=psi(2,1+floor(i_max*C_max_c/2));
 end
 
+%% Calculating the half coefficients used in iterations
 
+%iph= i+0.5     %jph= j+0.5
+%imh= i-0.5     %jmh= j-0.5
+c11_ih=zeros(j_max,i_max);
+c22_jh=zeros(j_max,i_max);
 
+for i=1:i_max-1
+    c11_ih(:,i+1)=(c11(:,i)+c11(:,i+1))/2; % from i=1.5 to i=i_max-0.5
+end
+c11_ih(:,1)=c11_ih(:,i_max); % value at i=0.5 is the same at i=i_max-0.5
 
+% since our iterations will start from j=2
+for j=1:j_max-1
+    c22_jh(j,:)=(c22(j,:)+c22(j+1,:))/2; % from j=1.5 to j=j_max-0.5
+end
 
+%% Coefficients used in iterations
 
+for j=2:j_max-1
+    for i=1:i_max-1
+        S_i_j(j-1,i)=(c11_ih(j,i+1)+c11_ih(j,i))/Delta_eta1^2 + ...
+            (c22_jh(j,i)+c22_jh(j-1,i))/Delta_eta2^2;
+
+        S_ip1_j(j-1,i)=c11_ih(j,i+1)/Delta_eta1^2;
+        S_im1_j(j-1,i)=c11_ih(j,i)/Delta_eta1^2;
+
+        S_i_jp1(j-1,i)=c22_jh(j,i)/Delta_eta2^2;
+        S_i_jm1(j-1,i)=c22_jh(j-1,i)/Delta_eta2^2;
+
+        S_ip1_jp1(j-1,i)=(c12(j,i+1)+c12(j+1,i))/(4*Delta_eta1*Delta_eta2);
+        S_ip1_jm1(j-1,i)=(-c12(j,i+1)-c12(j-1,i))/(4*Delta_eta1*Delta_eta2);
+        if i==1
+            S_im1_jp1(j-1,i)=(-c12(j,i_max-1)-c12(j+1,i))/(4*Delta_eta1*Delta_eta2);
+            S_im1_jm1(j-1,i)=(c12(j,i_max-1)+c12(j-1,i))/(4*Delta_eta1*Delta_eta2);
+        else
+        S_im1_jp1(j-1,i)=(-c12(j,i-1)-c12(j+1,i))/(4*Delta_eta1*Delta_eta2);
+        S_im1_jm1(j-1,i)=(c12(j,i-1)+c12(j-1,i))/(4*Delta_eta1*Delta_eta2);
+        end     
+    end
+end
+
+%% Iterations
+
+iteration_No=0;
+psi_intitial=psi;
+psi_iteration=psi_intitial;
+
+RMS=RMS_limit*10e5;
+
+while RMS>RMS_limit
+    for j=2:j_max-1
+        for i=1:i_max-1
+            if i==1
+                psi(j,i)=(psi_iteration(j,i+1)*S_ip1_j(j-1,i)+psi_iteration(j,i_max-1)*S_im1_j(j-1,i)+...
+                psi_iteration(j+1,i+1)*S_ip1_jp1(j-1,i)+psi_iteration(j-1,i+1)*S_ip1_jm1(j-1,i)+...
+                psi_iteration(j+1,i_max-1)*S_im1_jp1(j-1,i)+psi_iteration(j-1,i_max-1)*S_im1_jm1(j-1,i)+...
+                psi_iteration(j+1,i)*S_i_jp1(j-1,i)+psi_iteration(j-1,i)*S_i_jm1(j-1,i))/S_i_j(j-1,i);
+            else
+                psi(j,i)=(psi_iteration(j,i+1)*S_ip1_j(j-1,i)+psi_iteration(j,i-1)*S_im1_j(j-1,i)+...
+                psi_iteration(j+1,i+1)*S_ip1_jp1(j-1,i)+psi_iteration(j-1,i+1)*S_ip1_jm1(j-1,i)+...
+                psi_iteration(j+1,i-1)*S_im1_jp1(j-1,i)+psi_iteration(j-1,i-1)*S_im1_jm1(j-1,i)+...
+                psi_iteration(j+1,i)*S_i_jp1(j-1,i)+psi_iteration(j-1,i)*S_i_jm1(j-1,i))/S_i_j(j-1,i);
+            end
+        end
+    end
+    psi(:,i_max)=psi(:,1);
+    if C_max_c==0
+        psi(1,:)=psi(2,1);
+    elseif C_max_c>0
+        psi(1,:)=psi(2,i_max-ceil(i_max*C_max_c/2));
+    elseif C_max_c<0
+        psi(1,:)=psi(2,1+floor(i_max*C_max_c/2));
+    end
+
+    RMS=sqrt(sum(sum((psi-psi_iteration).^2))/((i_max-1)*(j_max-1)));
+
+    psi_iteration=psi;
+
+    iteration_No=iteration_No+1;
+end
+
+%% Velocity Calculation
+
+% since at i=1 and i=i_max is the same point
+% we calculate psi using central difference
+
+psi_eta1(:,1)=(psi(:,2)-psi(:,i_max-1))/(2*Delta_eta1);
+psi_eta1(:,i_max)=psi_eta1(:,1);
+
+% calculating at j=1 using forward difference
+psi_eta2(1,:)=(-3*psi(1,:)+4*psi(2,:)-1*psi(3,:))/(2*Delta_eta2);
+
+% calculating at j=j_max using backward difference
+psi_eta2(j_max,:)=(3*psi(j_max,:)-4*psi(j_max-1,:)+psi(j_max-2,:))/(2*Delta_eta2);
+
+for j=2:j_max-1
+    for i=1:i_max
+        psi_eta2(j,i)=(psi(j+1,i)-psi(j-1,i))/(2*Delta_eta2);
+    end
+end
+for j=2:j_max
+    for i=2:i_max-1
+        psi_eta1(j,i)=(psi(j,i+1)-psi(j,i-1))/(2*Delta_eta1);
+    end
+end
+
+eta1_x=y_eta2./J;
+eta1_y=-x_eta2./J;
+eta2_x=-y_eta1./J;
+eta2_y=x_eta1./J;
+
+u=psi_eta1.*eta1_y+psi_eta2.*eta2_y;
+v=-psi_eta1.*eta1_x-psi_eta2.*eta2_x;
+
+%% Cp Calculation
+
+V=sqrt(u.^2+v.^2);
+
+Cp=1-(V/Vinf).^2;
+
+%% Drawings
+
+figure(3)
+plot(x_circle_plot,Cp(1,:))

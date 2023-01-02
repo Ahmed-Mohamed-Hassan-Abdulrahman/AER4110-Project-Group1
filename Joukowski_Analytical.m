@@ -74,7 +74,7 @@ V_thetaDash = -Vinf *(sin(Theta_dash_vec-AoA).*(1+(a./r_dash).^2)+2*(a./r_dash)*
 % Velocity Magnitude over the Airfoil in Z1 Plane
 V1 = sqrt(V_thetaDash.^2./(1-2*(b./r_).^2.*cos(2*theta_vec)+(b./r_).^4));
 % pressure Coefficient
-C_p = 1-(V1/Vinf);
+C_p = 1-(V1/Vinf).^2;
 
 %% airforil Coordinates with Formula  
  X = 2*b*cos(Theta_dash_vec);
@@ -112,6 +112,9 @@ hold on
 
 figure('Name', 'Velocity over the Airfoil' )
       plot(x1, V1, '-')
+      grid on
+figure('Name', 'Velocity over the Airfoil' )
+      plot(x1, C_p, '-')
       grid on
 
 
