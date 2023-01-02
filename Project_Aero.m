@@ -13,14 +13,14 @@ Vinf=100;
 
 % Choose the maximum mesh size:
 
-i_max=50; j_max=50;
+i_max=100; j_max=100;
 
 % Enter the Joukowski Airfoil Parameters
 
-c=1;            % Chord
-C_max_c=0.04;     % Maximum Camber/Chord Percentage
-t_max_c=0.1;     % Maximum Thickness/Chord Percentage
-AoA=8*pi/180;          % Angle of Attack of flow Percentage
+c=1;                    % Chord
+C_max_c=0.04;           % Maximum Camber/Chord Percentage
+t_max_c=0.1;            % Maximum Thickness/Chord Percentage
+AoA=8*pi/180;           % Angle of Attack of flow Percentage
 
 % Drawing Parameters
 
@@ -288,7 +288,7 @@ iteration_No=0;
 psi_intitial=psi;
 psi_iteration=psi_intitial;
 
-RMS=RMS_limit*10e5;
+RMS=RMS_limit*1e5;
 
 while RMS>RMS_limit
     for j=2:j_max-1
@@ -302,15 +302,16 @@ while RMS>RMS_limit
                 psi(j,i)=(psi_iteration(j,i+1)*S_ip1_j(j-1,i)+psi_iteration(j,i-1)*S_im1_j(j-1,i)+...
                 psi_iteration(j+1,i+1)*S_ip1_jp1(j-1,i)+psi_iteration(j-1,i+1)*S_ip1_jm1(j-1,i)+...
                 psi_iteration(j+1,i-1)*S_im1_jp1(j-1,i)+psi_iteration(j-1,i-1)*S_im1_jm1(j-1,i)+...
-                psi_iteration(j+1,i)*S_i_jp1(j-1,i)+psi_iteration(j-1,i)*S_i_jm1(j-1,i))/S_i_j(j-1,i);
+                psi_iteration(j+1,i)*S_i_jp1(j-1,i)+psi_iteration(j-1,i)*S_i_jm1(j-1,i))./S_i_j(j-1,i);
             end
         end
     end
     psi(:,i_max)=psi(:,1);
+
     if C_max_c==0
         psi(1,:)=psi(2,1);
     elseif C_max_c>0
-        psi(1,:)=psi(2,i_max-ceil(i_max*C_max_c/2));
+        psi(1,:)=psi(2,i_max-1);
     elseif C_max_c<0
         psi(1,:)=psi(2,1+floor(i_max*C_max_c/2));
     end
@@ -358,6 +359,7 @@ v=-psi_eta1.*eta1_x-psi_eta2.*eta2_x;
 %% Cp Calculation
 
 V=sqrt(u.^2+v.^2);
+[j_ind,i_ind]=find(V>=3*mean(mean(V)));
 
 Cp=1-(V/Vinf).^2;
 
