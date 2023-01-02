@@ -13,7 +13,7 @@ Vinf=100;
 
 % Choose the maximum mesh size:
 
-i_max=100; j_max=100;
+i_max=50; j_max=50;
 
 % Enter the Joukowski Airfoil Parameters
 
