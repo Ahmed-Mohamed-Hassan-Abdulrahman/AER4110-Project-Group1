@@ -25,7 +25,7 @@ function [V1, C_p] = Joukowski(Vinf, AoA, c, C_max_c, t_max_c,  i_max )
 
 % The Free Stream Velocity
 
-Vinf=100;
+%Vinf=100;
 
 % Enter the Joukowski Airfoil Parameters
 
@@ -155,8 +155,8 @@ nexttile
       title('Velocity distribution', 'FontName','lm roman 9')
 nexttile
       hold on
-      fill(x1, 20*y1,'cyan')
-      plot(x1, 20*y1,'LineWidth',0.5,'color','black')
+      fill(x1, 20*y1+min(C_p),'cyan')
+      plot(x1, 20*y1+min(C_p),'LineWidth',0.5,'color','black')
       plot(x1, C_p, '-','LineWidth',1.5,'color','blue')
       grid on
       xlabel('$x_1$', 'interpreter', 'latex')
