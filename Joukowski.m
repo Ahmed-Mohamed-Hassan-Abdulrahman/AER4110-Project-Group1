@@ -25,8 +25,7 @@ Vinf=100;
 % c=1;              % Chord
 % C_max_c=0.04;     % Maximum Camber/Chord Percentage
 % t_max_c=0.05;     % Maximum Thickness/Chord Percentage
-   AoA=AoA*pi/180;     % Angle of Attack of flow Percentage
-
+   
 % Grid parameters 
 
 %  i_max = 10;       % eta_1 grid size 

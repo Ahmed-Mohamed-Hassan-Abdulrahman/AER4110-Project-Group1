@@ -13,7 +13,7 @@ Vinf=100;
 
 % Choose the maximum mesh size:
 
-i_max=100; j_max=100;
+i_max=50; j_max=50;
 
 % Enter the Joukowski Airfoil Parameters
 
@@ -359,11 +359,13 @@ v=-psi_eta1.*eta1_x-psi_eta2.*eta2_x;
 %% Cp Calculation
 
 V=sqrt(u.^2+v.^2);
-[j_ind,i_ind]=find(V>=3*mean(mean(V)));
-
+[j_ind,i_ind]=find(V>=10*mean(mean(V)));
+V(j_ind,i_ind)=(V(j_ind,i_ind-1)+V(j_ind,i_ind+1))/2;
 Cp=1-(V/Vinf).^2;
 
 %% Drawings
 
 figure(3)
 plot(x_circle_plot,Cp(1,:))
+
+[V_analytical, Cp_analytical]=Joukowski(Vinf, AoA, c, C_max_c, t_max_c,  1000 );
