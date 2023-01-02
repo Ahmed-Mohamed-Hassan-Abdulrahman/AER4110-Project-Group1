@@ -123,9 +123,10 @@ hold on
       plot(X, Y, '.')
       grid on
       axis('equal')
+      title('Joukowski Airfoil check')
 
 
-figure('Name', 'Velocity and Cp distribution over the Airfoil' )
+figure('Name', 'Analytical Pressure and Velocity distribution over the Airfoil' )
 tiledlayout(2,1);
 nexttile 
       hold on 
@@ -133,10 +134,9 @@ nexttile
       plot(x1, 700*y1,'LineWidth',0.5,'color','black')
       fill(x1, 700*y1,'cyan')
       grid on
-      grid on
-      xlabel('$x_1$', 'interpreter', 'latex')
-      ylabel('$V_1$', 'interpreter', 'latex')
-      legend('Velocity distribution','Airforil')
+      xlabel('$x$', 'interpreter', 'latex')
+      ylabel('$V$', 'interpreter', 'latex')
+      legend('Velocity distribution','Airfoil')
       title('Velocity distribution', 'FontName','lm roman 9')
 nexttile
       hold on
@@ -144,9 +144,9 @@ nexttile
       plot(x1, 20*y1+min(C_p),'LineWidth',0.5,'color','black')
       plot(x1, C_p, '-','LineWidth',1.5,'color','blue')
       grid on
-      xlabel('$x_1$', 'interpreter', 'latex')
+      xlabel('$x$', 'interpreter', 'latex')
       ylabel('$C_p$', 'interpreter', 'latex')
-      legend('Cp distribution','Airforil')
+      legend('Cp distribution','Airfoil')
       title('Pressure Coefficient distribution', 'FontName','lm roman 9')
 
 
