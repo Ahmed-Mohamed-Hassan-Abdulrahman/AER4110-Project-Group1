@@ -1,7 +1,19 @@
-clear all 
-close all 
-clc
+%% Flow Over Joukowski Airfoil. 
+% This Fucion Calculates the Velocity and pressure Distribution over an
+% Airforil by using the analysical joukowski transformaiotn.
+% Funcion Argumentd : (joukowski(Vinf, AoA, c, C_max_c, t_max_c) )
+%
+%   V_inf: the free streem Velocity.
+%     AoA: angle of attack
+%       c: cord line length
+% C_max_c: max camber (% of cord)
+% t_max_c: max thickness (% of cord)
+%   i_max: number of points  
+%     
+% Published by: Mohamed Tarek Mohamed Amien 
+% publishing year: 1st January /2023
 
+function [V1, C_p] = Joukowski(Vinf, AoA, c, C_max_c, t_max_c,  i_max ) 
 %% Initialization (Inputs)
 
 % The Free Stream Velocity
@@ -10,19 +22,19 @@ Vinf=100;
 
 % Enter the Joukowski Airfoil Parameters
 
-c=1;              % Chord
-C_max_c=0.04;     % Maximum Camber/Chord Percentage
-t_max_c=0.05;     % Maximum Thickness/Chord Percentage
-AoA=4*pi/180;     % Angle of Attack of flow Percentage
+% c=1;              % Chord
+% C_max_c=0.04;     % Maximum Camber/Chord Percentage
+% t_max_c=0.05;     % Maximum Thickness/Chord Percentage
+   AoA=AoA*pi/180;     % Angle of Attack of flow Percentage
 
 % Grid parameters 
 
-i_max = 100;       % eta_1 grid size 
-j_max = 100;       % eta_2 grid size
+%  i_max = 10;       % eta_1 grid size 
+% j_max = 100;       % eta_2 grid size
 
 %  Joukowski Transformation Parameters.
 
-%% circle Parameters 
+%% joukowski circle Parameters 
 
 b=c/4;                  
 e=t_max_c/1.3;          
@@ -35,10 +47,9 @@ y0 = a*beta;
 
 %% Z' Plane 
 
-
-D_theta = 2*pi()/(i_max-1);                % angle step size in the domain  Delta theta = 2*pi/(imax-1) 
+D_theta = 2*pi()/(i_max-1);              % angle step size in the domain  Delta theta = 2*pi/(imax-1) 
 Theta_dash_vec = 0:D_theta:2*pi();       % theta vector in z_dahs Plane 
-r_dash = a*ones(1,100);                                % Radius of the circle
+r_dash = a*ones(1,i_max);                  % Radius of the circle
 
 % x'-y' coords in z_dahs plane 
 
@@ -73,12 +84,17 @@ V_thetaDash = -Vinf *(sin(Theta_dash_vec-AoA).*(1+(a./r_dash).^2)+2*(a./r_dash)*
 
 % Velocity Magnitude over the Airfoil in Z1 Plane
 V1 = sqrt(V_thetaDash.^2./(1-2*(b./r_).^2.*cos(2*theta_vec)+(b./r_).^4));
+
+V1_x(1:1:100,:) = V1.*cos(theta1_vec).*ones(100,1);
+V1_y(1:1:100,:) = V1.*sin(theta1_vec).*ones(100,1);
 % pressure Coefficient
 C_p = 1-(V1/Vinf).^2;
 
 %% airforil Coordinates with Formula  
  X = 2*b*cos(Theta_dash_vec);
  Y = 2*b*e*(1-cos(Theta_dash_vec)).*sin(Theta_dash_vec)+2*b*beta*sin(Theta_dash_vec).^2;
+
+ 
 
 %% Plot commands 
 
@@ -110,11 +126,20 @@ hold on
       axis('equal')
 
 
-figure('Name', 'Velocity over the Airfoil' )
+figure('Name', 'Velocity and Cp distribution over the Airfoil' )
+tiledlayout(2,1);
+nexttile 
       plot(x1, V1, '-')
       grid on
-figure('Name', 'Velocity over the Airfoil' )
+      xlabel('$x_1$', 'interpreter', 'latex')
+      ylabel('$V_1$', 'interpreter', 'latex')
+      title('Velocity distribution', 'FontName','lm roman 9')
+nexttile
       plot(x1, C_p, '-')
       grid on
+      xlabel('$x_1$', 'interpreter', 'latex')
+      ylabel('$C_p$', 'interpreter', 'latex')
+      title('Pressure Coefficient distribution', 'FontName','lm roman 9')
 
 
+ end
